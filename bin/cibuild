@@ -1,0 +1,8 @@
+#!/bin/bash
+# Assumes submodule are checked out and repo is clean and ruby is in PATH
+
+# Debug output
+ruby -v
+hostname
+
+bundle install --quiet

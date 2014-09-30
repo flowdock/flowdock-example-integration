@@ -1,0 +1,8 @@
+- unless @integration_set
+  ' This application is not yet paired to any flow. Visit
+  a href="https://www.flowdock.com/account/authorized_applications" https://www.flowdock.com/account/authorized_applications
+  |  to start the pairing process.
+
+form action="activity" method="POST"
+  input type="text" name="text"
+  button.submit.primary-button type="submit" Send activity
