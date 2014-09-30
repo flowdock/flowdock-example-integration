@@ -16,6 +16,8 @@ In Flowdock, [set up OAuth application](https://www.flowdock.com/oauth/applicati
 Next copy the sample.env file to .env and setup the received application id and secret keys to the corresponding FLOWDOCK environment variables.
 Also set the `WEB_URL` variable to the public endpoint of your app.
 
+OR if you deploy to Heroku, then set the environment variables according to their documentation.
+
 ## Usage
 
 Point your browser to `https://<WEB_URL>/flowdock/setup?flow=<flow id>` to start pairing routine.

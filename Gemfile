@@ -20,7 +20,7 @@ gem 'sinatra-asset-pipeline'
 gem 'sprockets', '~> 2.12'
 gem 'compass', '~> 1.0.0.alpha.21'
 gem 'nokogiri'
-gem 'animate', '~> 0.2.beta.0'
+gem 'bootstrap-sass', '~> 3.2.0.2'
 
 group :development do
   gem 'rerun', require: false
