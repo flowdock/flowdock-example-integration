@@ -23,10 +23,15 @@ require 'securerandom'
 
 register Flowdock::Routes
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
-ActiveRecord::Base.establish_connection(
-  :adapter  => 'sqlite3',
-  :database => 'example.db'
-)
+# ActiveRecord::Base.establish_connection(
+#   :adapter  => 'sqlite3',
+#   :database => 'example.db'
+# )
+
+@environment = ENV['RACK_ENV']
+@dbconfig = YAML.load(File.read('config/database.yml'))
+ActiveRecord::Base.establish_connection @dbconfig[@environment]
+
 require_relative 'schema'
 
 get '/' do

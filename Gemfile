@@ -6,7 +6,6 @@ gem 'dotenv'
 gem 'sinatra', '~> 1.4'
 gem 'slim', '~> 2.0'
 gem 'puma', '~> 2.8.2'
-gem 'sqlite3', '~> 1.3.9'
 gem 'activerecord', '~> 4.1.6'
 
 # Authentication
@@ -25,6 +24,7 @@ gem 'nokogiri'
 gem 'bootstrap-sass', '~> 3.2.0.2'
 
 group :development do
+  gem 'sqlite3', '~> 1.3.9'
   gem 'rerun', require: false
   gem 'better_errors'
   gem 'binding_of_caller'
@@ -32,4 +32,8 @@ group :development do
   gem 'pry-byebug', '~> 1.3'
   gem 'pry-rescue'
   gem 'pry-stack_explorer'
+end
+
+group :production do
+  gem 'pg'
 end
