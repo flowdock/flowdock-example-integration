@@ -6,6 +6,8 @@ gem 'dotenv'
 gem 'sinatra', '~> 1.4'
 gem 'slim', '~> 2.0'
 gem 'puma', '~> 2.8.2'
+gem 'sqlite3', '~> 1.3.9'
+gem 'activerecord', '~> 4.1.6'
 
 # Authentication
 gem 'omniauth', '~> 1.2'

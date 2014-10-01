@@ -1,8 +1,31 @@
-- unless @integration_set
-  ' This application is not yet paired to any flow. Visit
-  a href="https://www.flowdock.com/account/authorized_applications" https://www.flowdock.com/account/authorized_applications
-  |  to start the pairing process.
+a.btn.btn-default type="button" href="/create" Create a new poll
+- if @open_polls.length == 0
+  p You don't have any open polls, create one!
 
-form action="activity" method="POST"
-  input type="text" name="text"
-  button.submit.primary-button type="submit" Send activity
+h2 Open polls
+ul
+  - for poll in @open_polls
+    li
+      h3
+        = poll.title
+        form action="/close/#{poll.id}" method="POST"
+          button.btn.btn-default type="submit" Close poll
+        - if poll.has_voted?(session[:user][:id])
+          |  (voted)
+      ol
+        - for option in poll.options
+          li
+            #{option.title}: #{option.votes.length}
+            - unless poll.has_voted?(session[:user][:id])
+              form action="/vote/#{poll.id}" method="POST"
+                input type="hidden" name="option" value=option.id
+                button.btn.btn-default type="submit" Vote
+
+h2 Closed polls
+ul
+  - for poll in @closed_polls
+    li
+      h3
+        = poll.title
+        form action="/archive/#{poll.id}" method="POST"
+          button.btn.btn-default type="submit" Archive
