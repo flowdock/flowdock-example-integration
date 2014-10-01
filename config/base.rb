@@ -10,11 +10,11 @@ configure :production do
   enable :raise_errors
 end
 
-set :assets_precompile, %w(*.png *.jpg *.svg *.eot *.ttf *.woff)
+set :assets_precompile, %w(*.png *.jpg *.svg *.eot *.ttf *.woff *.css)
 set :assets_css_compressor, :sass
 
 use Rack::Session::Cookie, secret: ENV['COOKIE_SECRET']
-set :public_folder, Proc.new { File.join(root, "static") }
+set :public_folder, File.dirname(__FILE__) + "/../static"
 set :views, File.dirname(__FILE__) + "/../views"
 
 FLOWDOCK_URL = ENV['FLOWDOCK_URL'] || 'https://api.flowdock.com'
