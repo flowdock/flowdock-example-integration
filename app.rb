@@ -29,7 +29,7 @@ use ActiveRecord::ConnectionAdapters::ConnectionManagement
 # )
 
 @environment = ENV['RACK_ENV']
-@dbconfig = YAML.load(File.read('config/database.yml'))
+@dbconfig = YAML.load(ERB.new(File.read(File.join("config","database.yml"))).result)
 ActiveRecord::Base.establish_connection @dbconfig[@environment]
 
 require_relative 'schema'
