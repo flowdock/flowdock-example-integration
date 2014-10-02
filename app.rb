@@ -32,12 +32,16 @@ ActiveRecord::Base.establish_connection @dbconfig[@environment]
 
 require_relative 'schema'
 
-get '/' do
+def maybe_create_user
   if !session.has_key?(:user)
     session[:user] = {
       id: SecureRandom.hex
     }
   end
+end
+
+get '/' do
+  maybe_create_user()
   @integration_set = session.has_key?(:integration_token)
   @open_polls = Poll.where(status: "open")
   @closed_polls = Poll.where(status: "closed")
@@ -45,10 +49,12 @@ get '/' do
 end
 
 get '/create' do
+  maybe_create_user()
   slim :create
 end
 
 post '/create' do
+  maybe_create_user()
   poll = Poll.create!(
     title: Rack::Utils.escape_html(params[:title]),
     status: "open"
@@ -64,6 +70,7 @@ post '/create' do
 end
 
 post '/:poll_id/vote' do
+  maybe_create_user()
   poll = Poll.find(params[:poll_id])
   option = poll.options.find(params[:option])
   vote = option.votes.create!(user_id: session[:user][:id])
@@ -72,6 +79,7 @@ post '/:poll_id/vote' do
 end
 
 post '/:poll_id/close' do
+  maybe_create_user()
   poll = Poll.find(params[:poll_id])
   poll.update!(status: "closed")
   Flowdock::ClosePoll.new(poll, session[:user]).save()
@@ -79,6 +87,7 @@ post '/:poll_id/close' do
 end
 
 post '/:poll_id/comment' do
+  maybe_create_user()
   poll = Poll.find(params[:poll_id])
   comment = Comment.create!(poll: poll, comment: params[:comment])
   Flowdock::CommentPoll.new(comment, session[:user]).save()
@@ -86,6 +95,7 @@ post '/:poll_id/comment' do
 end
 
 get '/:poll_id' do
+  maybe_create_user()
   @poll = Poll.find(params[:poll_id])
   slim :poll
 end

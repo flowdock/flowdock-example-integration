@@ -53,7 +53,7 @@ module Flowdock
         excerpt: excerpt,
         thread_id: "example:poll:#{@poll.id}",
         thread: {
-          external_url: ENV['WEB_URL'],
+          external_url: ENV['WEB_URL'] + "/#{@poll.id}",
           fields: fields,
           status: status,
           title: @poll.title
