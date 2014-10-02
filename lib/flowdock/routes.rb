@@ -47,7 +47,7 @@ module Flowdock
       app.post '/flowdock/integrate' do
         path = URI.parse(params[:flow_url]).path
         integration = oauth_connection.post("#{path}/integrations", {
-          name: "Example application"
+          name: "Public"
         })
         FlowdockIntegration.create!(token: integration.body["flow_token"])
         @flow_name = params[:flow_name]
