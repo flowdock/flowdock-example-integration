@@ -20,6 +20,13 @@ ActiveRecord::Schema.define do
     end
   end
 
+  unless ActiveRecord::Base.connection.tables.include? 'comments'
+    create_table :comments do |table|
+      table.column :poll_id,      :integer
+      table.column :comment,      :string
+    end
+  end
+
   unless ActiveRecord::Base.connection.tables.include? 'flowdock_integrations'
     create_table :flowdock_integrations do |table|
       table.column :token,    :string

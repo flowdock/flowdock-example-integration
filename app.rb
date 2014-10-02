@@ -12,12 +12,14 @@ require 'active_record'
 
 require_relative 'lib/flowdock/create_poll'
 require_relative 'lib/flowdock/close_poll'
+require_relative 'lib/flowdock/comment_poll'
 require_relative 'lib/flowdock/vote'
 require_relative 'lib/flowdock/routes'
 
 require_relative 'models/poll'
 require_relative 'models/option'
 require_relative 'models/vote'
+require_relative 'models/comment'
 
 require 'securerandom'
 
@@ -73,6 +75,13 @@ post '/:poll_id/close' do
   poll = Poll.find(params[:poll_id])
   poll.update!(status: "closed")
   Flowdock::ClosePoll.new(poll, session[:user]).save()
+  redirect to("/")
+end
+
+post '/:poll_id/comment' do
+  poll = Poll.find(params[:poll_id])
+  comment = Comment.create!(poll: poll, comment: params[:comment])
+  Flowdock::CommentPoll.new(comment, session[:user]).save()
   redirect to("/")
 end
 

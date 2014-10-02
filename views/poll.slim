@@ -22,4 +22,15 @@ table.options
 
 - if @poll.status == 'open'
   form action="/#{@poll.id}/close" method="POST"
-    button.btn.btn-danger type="submit" Close poll
+    button.poll-close type="submit" Close poll
+
+form.comment action="/#{@poll.id}/comment" method="POST" role="form"
+  textarea.form-control name="comment" placeholder="Comment this poll"
+  button.poll-comment type="submit" Comment
+
+- if @poll.comments.length > 0
+  h3 Comments
+  ol
+    -for comment in @poll.comments
+      li
+        = comment.comment

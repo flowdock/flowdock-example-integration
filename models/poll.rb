@@ -3,6 +3,7 @@ class Poll < ActiveRecord::Base
   validates :status, presence: true, length: { minimum: 4 }
   validates_uniqueness_of :title, conditions: -> { where.not(status: 'open') }
   has_many :options
+  has_many :comments
   #validates_associated :options
 
   def has_voted?(user_id)
