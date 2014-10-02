@@ -61,7 +61,7 @@ post '/create' do
   redirect to("/")
 end
 
-post '/vote/:poll_id' do
+post '/:poll_id/vote' do
   poll = Poll.find(params[:poll_id])
   option = poll.options.find(params[:option])
   vote = option.votes.create!(user_id: session[:user][:id])
@@ -69,9 +69,14 @@ post '/vote/:poll_id' do
   redirect to("/")
 end
 
-post '/close/:poll_id' do
+post '/:poll_id/close' do
   poll = Poll.find(params[:poll_id])
   poll.update!(status: "closed")
   Flowdock::ClosePoll.new(poll, session[:user]).save()
   redirect to("/")
+end
+
+get '/:poll_id' do
+  @poll = Poll.find(params[:poll_id])
+  slim :poll
 end

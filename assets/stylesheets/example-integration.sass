@@ -1,1 +1,30 @@
 @import bootstrap
+
+.poll-title
+  *
+    display: inline-block
+
+button.vote
+  @extend .btn
+  @extend .btn-success
+
+  margin-left: 1em
+
+.option
+  margin-bottom: 1em
+
+  *
+    display: inline-block
+
+.poll-list
+  @extend .list-unstyled
+  margin-left: 2em
+
+.poll-create
+  @extend .btn
+  @extend .btn-primary
+
+table.options
+  @extend .table
+  @extend .table-striped
+  @extend .table-hover

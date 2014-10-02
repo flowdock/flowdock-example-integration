@@ -1,0 +1,25 @@
+a href="/" Back to home
+h3
+  = @poll.title
+  - if @poll.status == 'open'
+    - if @poll.has_voted?(session[:user][:id])
+      small
+        |  (voted)
+
+table.options
+  - for option in @poll.options.top
+    tr
+      td
+        #{option.title}
+      td
+        #{option.votes_count}
+      - if @poll.status == 'open'
+        - unless @poll.has_voted?(session[:user][:id])
+          td
+            form action="/#{@poll.id}/vote" method="POST"
+              input type="hidden" name="option" value=option.id
+              button.vote type="submit" Vote
+
+- if @poll.status == 'open'
+  form action="/#{@poll.id}/close" method="POST"
+    button.btn.btn-danger type="submit" Close poll

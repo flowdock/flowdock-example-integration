@@ -1,31 +1,27 @@
-a.btn.btn-default type="button" href="/create" Create a new poll
+a.poll-create type="button" href="/create" Create a new poll
 - if @open_polls.length == 0
   p You don't have any open polls, create one!
 
 h2 Open polls
-ul
+ul.poll-list
   - for poll in @open_polls
     li
-      h3
-        = poll.title
-        form action="/close/#{poll.id}" method="POST"
-          button.btn.btn-default type="submit" Close poll
+      h3.poll-title
+        a href="/#{poll.id}" = poll.title
         - if poll.has_voted?(session[:user][:id])
           |  (voted)
       ol
-        - for option in poll.options
-          li
-            #{option.title}: #{option.votes.length}
+        - for option in poll.options.top
+          li.option
+            #{option.title}: #{option.votes_count}
             - unless poll.has_voted?(session[:user][:id])
-              form action="/vote/#{poll.id}" method="POST"
+              form action="/#{poll.id}/vote" method="POST"
                 input type="hidden" name="option" value=option.id
-                button.btn.btn-default type="submit" Vote
+                button.vote type="submit" Vote
 
 h2 Closed polls
-ul
+ul.poll-list
   - for poll in @closed_polls
     li
       h3
-        = poll.title
-        form action="/archive/#{poll.id}" method="POST"
-          button.btn.btn-default type="submit" Archive
+        a href="/#{poll.id}" = poll.title
