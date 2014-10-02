@@ -1,6 +1,6 @@
-# Flowdock example integration
+# Polldock - A Flowdock example integration
 
-This is a simpe Todo-application that shows how to integrate an application to Flowdock to receive notifications.
+This is a simpe Polling application that shows how to integrate an application to Flowdock to receive notifications.
 
 ## Setup
 
@@ -20,7 +20,8 @@ OR if you deploy to Heroku, then set the environment variables according to thei
 
 ## Usage
 
-Point your browser to `https://<WEB_URL>/flowdock/setup?flow=<flow id>` to start pairing routine.
+Point your browser to `https://<WEB_URL>/flowdock/setup?flow=<flow id>` to start pairing routine. This is done via the
+Flodock account applications view at some point
 
 The following command starts server and reloads after filesystem changes:
 
