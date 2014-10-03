@@ -1,5 +1,6 @@
 require 'sinatra/base'
 require_relative 'integration'
+require_relative '../../models/user'
 
 module Flowdock
   module Routes
@@ -23,10 +24,22 @@ module Flowdock
         auth = request.env['omniauth.auth']
         omniauth_params = request.env['omniauth.params']
         session[:flowdock_token] = auth[:credentials][:token]
-        redirect to("/flowdock/setup?flow=#{omniauth_params['flow']}")
+        if omniauth_params['flow']
+          redirect to("/flowdock/setup?flow=#{omniauth_params['flow']}")
+        else
+          user = User.create!(
+            session_token: SecureRandom.hex,
+            name: auth[:info][:name],
+            email: auth[:info][:email],
+            nick: auth[:info][:nickname]
+          )
+          session[:token] = user.session_token
+          redirect to("/")
+        end
       end
 
       app.get '/flowdock/setup' do
+        #store flow_id to session
         #solve redirect loop, although the flows - view would solve this I guess
         if session.has_key?(:flowdock_token)
           begin
@@ -49,10 +62,16 @@ module Flowdock
         integration = oauth_connection.post("#{path}/integrations", {
           name: "Public"
         })
+        #integration id, flow name, flow db_id
         FlowdockIntegration.create!(token: integration.body["flow_token"])
         @flow_name = params[:flow_name]
         slim :"flowdock/success"
       end
     end
+
+    # app.get 'flowdock/configure/' do
+    #   #params[:flow]
+    #   #params[:integration_id]
+    # end
   end
 end

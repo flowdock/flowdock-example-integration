@@ -20,16 +20,11 @@ module Flowdock
       fields
     end
 
-    def excerpt
-      ""
-    end
-
     def author
-      email = @user['email'] || "MyEmailAddress@example.com"
       {
-        name: @user['name'] || "Anonymous",
-        email: email,
-        avatar: avatar_url(email)
+        name: @user.name,
+        email: @user.email,
+        avatar: avatar_url(@user.email)
       }
     end
 
@@ -50,7 +45,6 @@ module Flowdock
         author: author,
         body: body,
         event: event,
-        excerpt: excerpt,
         thread_id: "example:poll:#{@poll.id}",
         thread: {
           external_url: ENV['WEB_URL'] + "/#{@poll.id}",

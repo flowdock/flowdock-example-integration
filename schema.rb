@@ -16,7 +16,7 @@ ActiveRecord::Schema.define do
   unless ActiveRecord::Base.connection.tables.include? 'votes'
     create_table :votes do |table|
       table.column :option_id,    :integer
-      table.column :user_id,      :string
+      table.column :user_id,      :integer
     end
   end
 
@@ -24,6 +24,15 @@ ActiveRecord::Schema.define do
     create_table :comments do |table|
       table.column :poll_id,      :integer
       table.column :comment,      :string
+    end
+  end
+
+  unless ActiveRecord::Base.connection.tables.include? 'users'
+    create_table :users do |table|
+      table.column :session_token,   :string
+      table.column :email,        :string
+      table.column :nick,         :string
+      table.column :name,         :string
     end
   end
 

@@ -20,6 +20,7 @@ require_relative 'models/poll'
 require_relative 'models/option'
 require_relative 'models/vote'
 require_relative 'models/comment'
+require_relative 'models/user'
 
 require 'securerandom'
 
@@ -32,16 +33,21 @@ ActiveRecord::Base.establish_connection @dbconfig[@environment]
 
 require_relative 'schema'
 
-def maybe_create_user
-  if !session.has_key?(:user)
-    session[:user] = {
-      id: SecureRandom.hex
-    }
+def current_user
+  user = User.find_by(session_token: session[:token])
+  if !user
+    redirect to("/authentication_required")
+  else
+    user
   end
 end
 
+get '/authentication_required' do
+  slim :authentication_required
+end
+
 get '/' do
-  maybe_create_user()
+  current_user
   @integration_set = session.has_key?(:integration_token)
   @open_polls = Poll.where(status: "open")
   @closed_polls = Poll.where(status: "closed")
@@ -49,12 +55,12 @@ get '/' do
 end
 
 get '/create' do
-  maybe_create_user()
+  current_user
   slim :create
 end
 
 post '/create' do
-  maybe_create_user()
+  current_user
   poll = Poll.create!(
     title: Rack::Utils.escape_html(params[:title]),
     status: "open"
@@ -65,37 +71,36 @@ post '/create' do
     poll.options.push Option.create!(poll: poll, title: Rack::Utils.escape_html(option).strip())
   end
 
-  Flowdock::CreatePoll.new(poll, session[:user]).save()
+  Flowdock::CreatePoll.new(poll, current_user).save()
   redirect to("/")
 end
 
 post '/:poll_id/vote' do
-  maybe_create_user()
   poll = Poll.find(params[:poll_id])
   option = poll.options.find(params[:option])
-  vote = option.votes.create!(user_id: session[:user][:id])
-  Flowdock::Vote.new(vote, session[:user]).save()
+  vote = Vote.create!(option: option, user: current_user)
+  Flowdock::Vote.new(vote, current_user).save()
   redirect to("/")
 end
 
 post '/:poll_id/close' do
-  maybe_create_user()
+  current_user
   poll = Poll.find(params[:poll_id])
   poll.update!(status: "closed")
-  Flowdock::ClosePoll.new(poll, session[:user]).save()
+  Flowdock::ClosePoll.new(poll, current_user).save()
   redirect to("/")
 end
 
 post '/:poll_id/comment' do
-  maybe_create_user()
+  current_user
   poll = Poll.find(params[:poll_id])
   comment = Comment.create!(poll: poll, comment: params[:comment])
-  Flowdock::CommentPoll.new(comment, session[:user]).save()
+  Flowdock::CommentPoll.new(comment, current_user).save()
   redirect to("/")
 end
 
 get '/:poll_id' do
-  maybe_create_user()
+  current_user
   @poll = Poll.find(params[:poll_id])
   slim :poll
 end
