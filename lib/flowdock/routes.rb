@@ -27,12 +27,17 @@ module Flowdock
         if omniauth_params['flow']
           redirect to("/flowdock/setup?flow=#{omniauth_params['flow']}")
         else
-          user = User.create!(
-            session_token: SecureRandom.hex,
-            name: auth[:info][:name],
-            email: auth[:info][:email],
-            nick: auth[:info][:nickname]
-          )
+          user = User.find_by(email: auth[:info][:email])
+          if user
+            user.update!(session_token: SecureRandom.hex)
+          else
+            user = User.create!(
+              session_token: SecureRandom.hex,
+              name: auth[:info][:name],
+              email: auth[:info][:email],
+              nick: auth[:info][:nickname]
+            )
+          end
           session[:token] = user.session_token
           redirect to("/")
         end

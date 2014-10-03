@@ -8,13 +8,13 @@ ul.poll-list
     li
       h3.poll-title
         a href="/#{poll.id}" = poll.title
-        - if poll.has_voted?(session[:user][:id])
+        - if poll.has_voted?(current_user)
           |  (voted)
       ol
         - for option in poll.options.top
           li.option
             #{option.title}: #{option.votes_count}
-            - unless poll.has_voted?(session[:user][:id])
+            - unless poll.has_voted?(current_user)
               form action="/#{poll.id}/vote" method="POST"
                 input type="hidden" name="option" value=option.id
                 button.vote type="submit" Vote
