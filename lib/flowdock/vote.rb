@@ -11,7 +11,7 @@ module Flowdock
     end
 
     def title
-      "#{@user[:name]} voted for #{@vote.option.title}"
+      "Voted for #{@vote.option.title}"
     end
   end
 end
