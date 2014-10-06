@@ -19,9 +19,8 @@ module Flowdock
     def self.registered(app)
       app.helpers Routes::Helpers
 
-      # Setup endpoint which is configured to the application
+      # Start the OAuth 2.0 process by redirecting to Omniauth endpoint
       app.get '/flowdock/setup' do
-        # Redirecting to the oauthentication with Flowdock
         # The authentication endpoint is configured in Omniauth::Builder in config/base.rb
         redirect to("/auth/flowdock?flow=#{params[:flow]}")
       end
@@ -40,7 +39,7 @@ module Flowdock
 
       # Endpoint for failed authorizations
       app.get '/auth/failure' do
-        "Oauthentication with Flowdock failed"
+        "OAuth with Flowdock failed"
       end
 
       # Endpoint for creating the integration with the flow
@@ -48,9 +47,9 @@ module Flowdock
         path = URI.parse(params[:flow_url]).path
 
         integration = oauth_connection.post("#{path}/integrations", {
-          # Name parameter can be used to communicate this particular integration, since the integration can be
-          # created multiple times to one flow. In this case, we could use different categories for polls e.g.
-          # work / non-work / all
+          # As an application can be integrated with a flow multiple times (to add different notification sources),
+          # the name parameter is used to distinguish these instances.
+          # In the polling case, we could use different categories for polls e.g. work / non-work / all
           name: "All polls"
         })
 
@@ -66,7 +65,7 @@ module Flowdock
 
       # Endpoint for integration configuration
       app.get '/flowdock/configure' do
-        integration = FlowdockIntegration.where(flodock_id: params[:integration_id])
+        integration = FlowdockIntegration.where(flowdock_id: params[:integration_id])
         # Configure the integration, e.g. which actions are posted to Flowdock
       end
     end
