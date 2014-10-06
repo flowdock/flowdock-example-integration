@@ -1,19 +1,19 @@
 # Polldock - A Flowdock example integration
 
-This is a simpe Polling application that shows how to integrate an application to Flowdock to receive threaded activities.
+This is a simple polling application that illustrates how to integrate an application to Flowdock to receive threaded activities.
 
 ## Setup
 
 Install dependencies with bundler (`bundle install`).
 
-Then, to set up the application, register OAuth application for the example application and Flowdock.
+To set up the application, register OAuth application for the example application and Flowdock.
 
 In Flowdock, [set up OAuth application](https://www.flowdock.com/oauth/applications/) and use the following values
 
     Callback URL: https://<WEB_URL>/auth/flowdock/callback
     Icon: Choose appropriate images for the application. You can use the images found in assets/images
 
-Next copy the sample.env file to .env and setup the received application id and secret keys to the corresponding FLOWDOCK environment variables.
+Copy the sample.env file to .env and setup the received application id and secret keys to the corresponding FLOWDOCK environment variables.
 Also set the `WEB_URL` variable to the public endpoint of your app.
 
 OR if you deploy to Heroku, then set the environment variables according to their documentation.
