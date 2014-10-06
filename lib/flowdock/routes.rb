@@ -23,25 +23,17 @@ module Flowdock
         auth = request.env['omniauth.auth']
         omniauth_params = request.env['omniauth.params']
         session[:flowdock_token] = auth[:credentials][:token]
-        redirect to("/flowdock/setup?flow=#{omniauth_params['flow']}")
+        @flow = oauth_connection.get("/flows/find?id=#{omniauth_params['flow']}").body
+        slim :"flowdock/connect"
       end
 
       app.get '/flowdock/setup' do
-        #solve redirect loop, although the flows - view would solve this I guess
-        if session.has_key?(:flowdock_token)
-          begin
-            @flow = oauth_connection.get("/flows/find?id=#{params[:flow]}").body
-          rescue Faraday::Error::ClientError => e
-            if defined? e.response && e.response[:status] == 401
-              redirect to("/auth/flowdock?flow=#{params[:flow]}")
-            else
-              raise e
-            end
-          end
-          slim :"flowdock/connect"
-        else
-          redirect to("/auth/flowdock?flow=#{params[:flow]}")
-        end
+        #See base.rb for the magical Omniauth url
+        redirect to("/auth/flowdock?flow=#{params[:flow]}")
+      end
+
+      app.get '/auth/failure' do
+        "Oauthentication with Flowdock failed"
       end
 
       app.post '/flowdock/integrate' do
@@ -51,6 +43,7 @@ module Flowdock
         })
         FlowdockIntegration.create!(token: integration.body["flow_token"])
         @flow_name = params[:flow_name]
+        session.delete(:flowdock_token)
         slim :"flowdock/success"
       end
     end
