@@ -1,6 +1,6 @@
 # Polldock - A Flowdock example integration
 
-This is a simpe Polling application that shows how to integrate an application to Flowdock to receive notifications.
+This is a simpe Polling application that shows how to integrate an application to Flowdock to receive threaded activities.
 
 ## Setup
 
@@ -11,7 +11,7 @@ Then, to set up the application, register OAuth application for the example appl
 In Flowdock, [set up OAuth application](https://www.flowdock.com/oauth/applications/) and use the following values
 
     Callback URL: https://<WEB_URL>/auth/flowdock/callback
-    Icon: Some icon
+    Icon: Choose appropriate images for the application. You can use the images found in assets/images
 
 Next copy the sample.env file to .env and setup the received application id and secret keys to the corresponding FLOWDOCK environment variables.
 Also set the `WEB_URL` variable to the public endpoint of your app.
@@ -21,8 +21,15 @@ OR if you deploy to Heroku, then set the environment variables according to thei
 ## Usage
 
 Point your browser to `https://<WEB_URL>/flowdock/setup?flow=<flow id>` to start pairing routine. This is done via the
-Flodock account applications view at some point
+Flowdock account's applications view at some point
 
 The following command starts server and reloads after filesystem changes:
 
     bundle exec rerun -- foreman start -p 3300
+
+## Heroku deployment
+
+1. Create Heroku application
+2. Add Postgres to your Heroku application
+3. Set environment variables in Heroku configuration
+4. Push to Heroku
