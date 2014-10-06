@@ -38,7 +38,8 @@ ActiveRecord::Schema.define do
 
   unless ActiveRecord::Base.connection.tables.include? 'flowdock_integrations'
     create_table :flowdock_integrations do |table|
-      table.column :token,    :string
+      table.column :token,        :string
+      table.column :flowdock_id,  :integer
     end
   end
 end

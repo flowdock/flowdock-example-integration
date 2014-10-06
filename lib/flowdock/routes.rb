@@ -7,7 +7,7 @@ module Flowdock
     module Helpers
       def oauth_connection
         Faraday.new FLOWDOCK_URL do |connection|
-          connection.request :oauth2, session[:flowdock_token]
+          connection.request :oauth2, session[:access_token]
           connection.request :json
           connection.response :json, content_type: /\bjson$/
           connection.response :logger if logger.debug?
@@ -20,12 +20,23 @@ module Flowdock
     def self.registered(app)
       app.helpers Routes::Helpers
 
+      # Start the OAuth 2.0 process by redirecting to Omniauth endpoint
+      app.get '/flowdock/setup' do
+        # The authentication endpoint is configured in Omniauth::Builder in config/base.rb
+        redirect to("/auth/flowdock?flow=#{params[:flow]}")
+      end
+
+      # Callback endpoint for successful authorizations
       app.get '/auth/flowdock/callback' do
         auth = request.env['omniauth.auth']
         omniauth_params = request.env['omniauth.params']
-        session[:flowdock_token] = auth[:credentials][:token]
+        session[:access_token] = auth[:credentials][:token]
         if omniauth_params['flow']
-          redirect to("/flowdock/setup?flow=#{omniauth_params['flow']}")
+          # Get the flow's information from Flowdock
+          # The flow-parameter in omniauth params is the one we passed in the /flowdock/setup redirect url
+          @flow = oauth_connection.get("/flows/find?id=#{omniauth_params['flow']}").body
+          # Flow information contains the url for the flow, which we need for creating the integration
+          slim :"flowdock/connect"
         else
           user = User.find_by(email: auth[:info][:email])
           if user
@@ -43,40 +54,38 @@ module Flowdock
         end
       end
 
-      app.get '/flowdock/setup' do
-        #store flow_id to session
-        #solve redirect loop, although the flows - view would solve this I guess
-        if session.has_key?(:flowdock_token)
-          begin
-            @flow = oauth_connection.get("/flows/find?id=#{params[:flow]}").body
-          rescue Faraday::Error::ClientError => e
-            if defined? e.response && e.response[:status] == 401
-              redirect to("/auth/flowdock?flow=#{params[:flow]}")
-            else
-              raise e
-            end
-          end
-          slim :"flowdock/connect"
-        else
-          redirect to("/auth/flowdock?flow=#{params[:flow]}")
-        end
+      # Endpoint for failed authorizations
+      app.get '/auth/failure' do
+        "OAuth with Flowdock failed"
       end
 
+      # Endpoint for creating the integration with the flow
       app.post '/flowdock/integrate' do
         path = URI.parse(params[:flow_url]).path
+
         integration = oauth_connection.post("#{path}/integrations", {
-          name: "Public"
+          # As an application can be integrated with a flow multiple times (to add different notification sources),
+          # the name parameter is used to distinguish these instances.
+          # In the polling case, we could use different categories for polls e.g. work / non-work / all
+          name: "All polls"
         })
-        #integration id, flow name, flow db_id
-        FlowdockIntegration.create!(token: integration.body["flow_token"])
+
+        FlowdockIntegration.create!(
+          token: integration.body["flow_token"], # Used for posting to the activities endpoint
+          flowdock_id: integration.body["id"]    # Used for later configuration of the integration
+        )
+
         @flow_name = params[:flow_name]
+        session.delete(:access_token)
         slim :"flowdock/success"
+      end
+
+      # Endpoint for integration configuration
+      app.get '/flowdock/configure' do
+        integration = FlowdockIntegration.where(flowdock_id: params[:integration_id])
+        # Configure the integration, e.g. which actions are posted to Flowdock
       end
     end
 
-    # app.get 'flowdock/configure/' do
-    #   #params[:flow]
-    #   #params[:integration_id]
-    # end
   end
 end
