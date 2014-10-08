@@ -15,6 +15,7 @@ require_relative 'lib/flowdock/close_poll'
 require_relative 'lib/flowdock/comment_poll'
 require_relative 'lib/flowdock/vote'
 require_relative 'lib/flowdock/routes'
+require_relative 'lib/flowdock/new_option'
 
 require_relative 'models/poll'
 require_relative 'models/option'
@@ -56,13 +57,13 @@ end
 post '/create' do
   maybe_create_user()
   poll = Poll.create!(
-    title: Rack::Utils.escape_html(params[:title]),
+    title: params[:title].strip(),
     status: "open"
   )
 
   options = params[:options].split(",")
   for option in options
-    poll.options.push Option.create!(poll: poll, title: Rack::Utils.escape_html(option).strip())
+    poll.options.push Option.create!(poll: poll, title: option.strip())
   end
 
   Flowdock::CreatePoll.new(poll, session[:user]).save()
@@ -89,9 +90,17 @@ end
 post '/:poll_id/comment' do
   maybe_create_user()
   poll = Poll.find(params[:poll_id])
-  comment = Comment.create!(poll: poll, comment: params[:comment])
+  comment = Comment.create!(poll: poll, comment: params[:comment].strip())
   Flowdock::CommentPoll.new(comment, session[:user]).save()
   redirect to("/")
+end
+
+post '/:poll_id/add_option' do
+  maybe_create_user()
+  poll = Poll.find(params[:poll_id])
+  option = Option.create!(poll: poll, title: params[:title].strip())
+  Flowdock::NewOption.new(option, session[:user]).save()
+  redirect to("/" + params[:poll_id])
 end
 
 get '/:poll_id' do
