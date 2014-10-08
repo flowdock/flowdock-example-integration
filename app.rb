@@ -84,13 +84,6 @@ post '/:poll_id/vote' do
   redirect to("/")
 end
 
-get '/:poll_id/vote/:option_id' do
-  option = Option.find(params[:option_id])
-  vote = Vote.create!(option: option, user: current_user)
-  Flowdock::Vote.new(vote, current_user).save()
-  redirect to("/" + params[:poll_id])
-end
-
 post '/:poll_id/close' do
   current_user
   poll = Poll.find(params[:poll_id])
@@ -102,7 +95,7 @@ end
 post '/:poll_id/comment' do
   current_user
   poll = Poll.find(params[:poll_id])
-  comment = Comment.create!(poll: poll, comment: params[:comment])
+  comment = Comment.create!(poll: poll, comment: Rack::Utils.escape_html(params[:comment]))
   Flowdock::CommentPoll.new(comment, current_user).save()
   redirect to("/" + params[:poll_id])
 end
