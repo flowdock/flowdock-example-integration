@@ -63,13 +63,13 @@ end
 post '/create' do
   current_user
   poll = Poll.create!(
-    title: Rack::Utils.escape_html(params[:title]),
+    title: params[:title],
     status: "open"
   )
 
   options = params[:options].split(",")
   for option in options
-    poll.options.push Option.create!(poll: poll, title: Rack::Utils.escape_html(option).strip())
+    poll.options.push Option.create!(poll: poll, title: option.strip())
   end
 
   Flowdock::CreatePoll.new(poll, current_user).save()
@@ -78,7 +78,7 @@ end
 
 post '/:poll_id/vote' do
   poll = Poll.find(params[:poll_id])
-  option = poll.options.find(params[:option])
+  option = poll.options.find(params[:option].strip())
   vote = Vote.create!(option: option, user: current_user)
   Flowdock::Vote.new(vote, current_user).save()
   redirect to("/")
@@ -95,7 +95,7 @@ end
 post '/:poll_id/comment' do
   current_user
   poll = Poll.find(params[:poll_id])
-  comment = Comment.create!(poll: poll, comment: Rack::Utils.escape_html(params[:comment]))
+  comment = Comment.create!(poll: poll, comment: params[:comment].strip())
   Flowdock::CommentPoll.new(comment, current_user).save()
   redirect to("/" + params[:poll_id])
 end
@@ -103,7 +103,7 @@ end
 post '/:poll_id/add_option' do
   current_user
   poll = Poll.find(params[:poll_id])
-  option = Option.create!(poll: poll, title: Rack::Utils.escape_html(params[:title]).strip())
+  option = Option.create!(poll: poll, title: params[:title].strip())
   Flowdock::NewOption.new(option, current_user).save()
   redirect to("/" + params[:poll_id])
 end
