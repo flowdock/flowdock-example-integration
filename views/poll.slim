@@ -21,8 +21,13 @@ table.options
               button.vote type="submit" Vote
 
 - if @poll.status == 'open'
-  form action="/#{@poll.id}/close" method="POST"
-    button.poll-close type="submit" Close poll
+  p
+    form.form-inline action="/#{@poll.id}/add_option" method="POST" role="form"
+      input.form-control type="text" name="title" placeholder="Title"
+      button.vote type="submit" Create new option
+  p
+    form action="/#{@poll.id}/close" method="POST"
+      button.poll-close type="submit" Close poll
 
 form.comment action="/#{@poll.id}/comment" method="POST" role="form"
   textarea.form-control name="comment" placeholder="Comment this poll"
