@@ -18,12 +18,14 @@ ul.poll-list
             - if poll.has_voted?(current_user)
               - if poll.voted_option_for_user(current_user) == option
                 form action="/#{poll.id}/unvote" method="POST"
+                  == Rack::Csrf.tag(env)
                   input type="hidden" name="_method" value="delete"
                   input type="hidden" name="option" value=option.id
                   input type="hidden" name="redirect" value="/"
                   button.unvote type="submit" Unvote
             - else
               form action="/#{poll.id}/vote" method="POST"
+                == Rack::Csrf.tag(env)
                 input type="hidden" name="option" value=option.id
                 input type="hidden" name="redirect" value="/"
                 button.vote type="submit" Vote

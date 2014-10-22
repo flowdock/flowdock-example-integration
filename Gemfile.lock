@@ -115,6 +115,8 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
+    rack_csrf (2.5.0)
+      rack (>= 1.1.0)
     rake (10.3.2)
     rb-fsevent (0.9.4)
     rb-inotify (0.9.5)
@@ -178,6 +180,7 @@ DEPENDENCIES
   pry-rescue
   pry-stack_explorer
   puma (~> 2.8.2)
+  rack_csrf (~> 2.5.0)
   rake
   rerun
   sinatra (~> 1.4)

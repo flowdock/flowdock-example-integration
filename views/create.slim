@@ -1,5 +1,6 @@
 a href="/" Back to home
 form action="create" method="POST" role="form"
+  == Rack::Csrf.tag(env)
   div.form-group
     label for="title" Title
     input.form-control type="text" name="title" placeholder="Title"

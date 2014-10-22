@@ -25,9 +25,11 @@ require_relative 'models/comment'
 require_relative 'models/user'
 
 require 'securerandom'
+require 'rack/csrf'
 
 register Flowdock::Routes
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
+use Rack::Csrf
 
 @environment = ENV['RACK_ENV'] || "development"
 @dbconfig = YAML.load(ERB.new(File.read(File.join("config","database.yml"))).result)

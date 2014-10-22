@@ -7,6 +7,7 @@ gem 'sinatra', '~> 1.4'
 gem 'slim', '~> 2.0'
 gem 'puma', '~> 2.8.2'
 gem 'activerecord', '~> 4.1.6'
+gem 'rack_csrf', '~> 2.5.0'
 
 # Authentication
 gem 'omniauth', '~> 1.2'

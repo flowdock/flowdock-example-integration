@@ -3,7 +3,7 @@ h1
   =@flow['name']
 
 form#connect-form action="/flowdock/integrate" method="POST"
-  input name="authenticity_token" value=session[:csrf] type="hidden"
+  == Rack::Csrf.tag(env)
   input type="hidden" name="flow_url" value=@flow['url']
   input type="hidden" name="flow_name" value=@flow['name']
   button.submit.primary-button type="submit" Continue
