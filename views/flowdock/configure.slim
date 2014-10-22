@@ -1,13 +1,5 @@
-form action="/flowdock/integration/#{@integration['id']}" method="POST" role="form"
-  input type="hidden" name="source_url" value="#{@integration['url']}"
-  input type="hidden" name="_method" value="put"
-  div.form-group
-    label for="name" Name
-    input.form-control type="text" name="name" placeholder="Name" value="#{@integration['name']}"
+-if @internal_integration
+  | This page is intented to be for configuring what is sent to Flowdock
 
-  button.poll-create type="submit" Update integration
-
-form action="/flowdock/integration/#{@integration['id']}" method="POST"
-  input type="hidden" name="source_url" value="#{@integration['url']}"
-  input type="hidden" name="_method" value="delete"
-    button.poll-close type="submit" Delete integration
+- else
+  | This integration doesn't exist in Polldock anymore and should be deleted from Flowdock.

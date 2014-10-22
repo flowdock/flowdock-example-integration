@@ -15,11 +15,12 @@ table.options
         #{option.votes_count}
       - if @poll.status == 'open'
         td
-          - if @poll.has_voted?(current_user) && @poll.voted_option_for_user(current_user) == option
-            form action="/#{@poll.id}/unvote" method="POST"
-              input type="hidden" name="_method" value="delete"
-              input type="hidden" name="option" value=option.id
-              button.unvote type="submit" Unvote
+          - if @poll.has_voted?(current_user)
+            -if @poll.voted_option_for_user(current_user) == option
+              form action="/#{@poll.id}/unvote" method="POST"
+                input type="hidden" name="_method" value="delete"
+                input type="hidden" name="option" value=option.id
+                button.unvote type="submit" Unvote
           - else
             form action="/#{@poll.id}/vote" method="POST"
               input type="hidden" name="option" value=option.id

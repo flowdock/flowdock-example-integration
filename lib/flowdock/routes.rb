@@ -50,8 +50,9 @@ module Flowdock
           # Flow information contains the url for the flow, which we need for creating the integration
           slim :"flowdock/connect"
         elsif omniauth_params['source']
+          @internal_integration = FlowdockIntegration.find_by(flowdock_id: omniauth_params['source'])
           path = URI.parse(omniauth_params['source_url']).path
-          @integration = oauth_connection.get(path).body
+          @flowdock_integration = oauth_connection.get(path).body
           slim :"flowdock/configure"
         else
           redirect to("/")
@@ -84,13 +85,9 @@ module Flowdock
         slim :"flowdock/success"
       end
 
-      app.put '/flowdock/integration/:source_id' do
-        @integration = FlowdockIntegration.find_by(flowdock_id: params['source_id'])
-        # Do something with it
-      end
-
-      # app.delete '/flowdock/integration/:source_id' do
-      #   if FlowdockIntegration.find_by(flowdock_id: params['source_id']).destroy
+      # app.put '/flowdock/integration/:source_id' do
+      #   @integration = FlowdockIntegration.find_by(flowdock_id: params['source_id'])
+      #   # Do something with it
       # end
 
       # Endpoint for configurating the integration, e.g. which actions are posted to Flowdock

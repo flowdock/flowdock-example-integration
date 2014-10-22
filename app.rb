@@ -83,7 +83,11 @@ post '/:poll_id/vote' do
   option = poll.options.find(params[:option].strip())
   vote = Vote.create!(option: option, user: current_user)
   Flowdock::Vote.new(vote, current_user).save()
-  redirect to("/" + params[:poll_id])
+  if params[:redirect]
+    redirect to("/")
+  else
+    redirect to("/" + params[:poll_id])
+  end
 end
 
 delete '/:poll_id/unvote' do
@@ -93,7 +97,11 @@ delete '/:poll_id/unvote' do
   vote = Vote.find_by(option: option, user: current_user)
   vote.destroy!
   Flowdock::UnVote.new(vote, current_user).save()
-  redirect to("/" + params[:poll_id])
+  if params[:redirect]
+    redirect to("/")
+  else
+    redirect to("/" + params[:poll_id])
+  end
 end
 
 post '/:poll_id/close' do
