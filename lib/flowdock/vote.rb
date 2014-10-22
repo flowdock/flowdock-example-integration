@@ -6,6 +6,9 @@ module Flowdock
       @vote = vote
       super(vote.option.poll, user)
     end
+
+    protected
+
     def event
       "activity"
     end

@@ -2,6 +2,8 @@ require_relative 'activity'
 
 module Flowdock
   class ClosePoll < Activity
+    protected
+
     def event
       "activity"
     end
