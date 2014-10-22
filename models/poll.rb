@@ -9,6 +9,10 @@ class Poll < ActiveRecord::Base
     options.joins(:votes).where(votes: {user_id: user_id}).exists?
   end
 
+  def voted_option_for_user(user_id)
+    options.joins(:votes).where(votes: {user_id: user_id}).first
+  end
+
   def leaders
     lead_options = []
     max = 0

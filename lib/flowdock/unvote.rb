@@ -1,7 +1,7 @@
 require_relative 'activity'
 
 module Flowdock
-  class Vote < Activity
+  class UnVote < Activity
     def initialize(vote, user)
       @vote = vote
       super(vote.option.poll, user)
@@ -14,7 +14,7 @@ module Flowdock
     end
 
     def title
-      "Voted for #{@vote.option.title}"
+      "Removed vote from #{@vote.option.title}"
     end
   end
 end

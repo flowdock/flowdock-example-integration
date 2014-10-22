@@ -15,10 +15,6 @@ module Flowdock
       @comment.comment
     end
 
-    def excerpt
-      body
-    end
-
     def title
       "Commented poll"
     end

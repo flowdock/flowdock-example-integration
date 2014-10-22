@@ -16,6 +16,7 @@ require_relative 'lib/flowdock/comment_poll'
 require_relative 'lib/flowdock/vote'
 require_relative 'lib/flowdock/routes'
 require_relative 'lib/flowdock/new_option'
+require_relative 'lib/flowdock/unvote'
 
 require_relative 'models/poll'
 require_relative 'models/option'
@@ -77,11 +78,22 @@ post '/create' do
 end
 
 post '/:poll_id/vote' do
+  current_user
   poll = Poll.find(params[:poll_id])
   option = poll.options.find(params[:option].strip())
   vote = Vote.create!(option: option, user: current_user)
   Flowdock::Vote.new(vote, current_user).save()
-  redirect to("/")
+  redirect to("/" + params[:poll_id])
+end
+
+delete '/:poll_id/unvote' do
+  current_user
+  poll = Poll.find(params[:poll_id])
+  option = poll.options.find(params[:option].strip())
+  vote = Vote.find_by(option: option, user: current_user)
+  vote.destroy!
+  Flowdock::UnVote.new(vote, current_user).save()
+  redirect to("/" + params[:poll_id])
 end
 
 post '/:poll_id/close' do
@@ -89,7 +101,7 @@ post '/:poll_id/close' do
   poll = Poll.find(params[:poll_id])
   poll.update!(status: "closed")
   Flowdock::ClosePoll.new(poll, current_user).save()
-  redirect to("/")
+  redirect to("/" + params[:poll_id])
 end
 
 post '/:poll_id/comment' do
@@ -110,6 +122,10 @@ end
 
 get '/:poll_id' do
   current_user
-  @poll = Poll.find(params[:poll_id])
+  begin
+    @poll = Poll.find(params[:poll_id])
+  rescue ActiveRecord::RecordNotFound => e
+    halt(404)
+  end
   slim :poll
 end

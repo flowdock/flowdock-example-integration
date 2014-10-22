@@ -15,7 +15,12 @@ ul.poll-list
         - for option in poll.options.top
           li.option
             #{option.title}: #{option.votes_count}
-            - unless poll.has_voted?(current_user)
+            - if poll.has_voted?(current_user) && poll.voted_option_for_user(current_user) == option
+              form action="/#{poll.id}/unvote" method="POST"
+                input type="hidden" name="_method" value="delete"
+                input type="hidden" name="option" value=option.id
+                button.unvote type="submit" Unvote
+            - else
               form action="/#{poll.id}/vote" method="POST"
                 input type="hidden" name="option" value=option.id
                 button.vote type="submit" Vote
