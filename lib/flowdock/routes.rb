@@ -30,11 +30,19 @@ module Flowdock
         auth = request.env['omniauth.auth']
         omniauth_params = request.env['omniauth.params']
         session[:access_token] = auth[:credentials][:token]
-        # Get the flow's information from Flowdock
-        # The flow-parameter in omniauth params is the one we passed in the /flowdock/setup redirect url
-        @flow = oauth_connection.get("/flows/find?id=#{omniauth_params['flow']}").body
-        # Flow information contains the url for the flow, which we need for creating the integration
-        slim :"flowdock/connect"
+        if omniauth_params['flow']
+          # Get the flow's information from Flowdock
+          # The flow-parameter in omniauth params is the one we passed in the /flowdock/setup redirect url
+          @flow = oauth_connection.get("/flows/find?id=#{omniauth_params['flow']}").body
+          # Flow information contains the url for the flow, which we need for creating the integration
+          slim :"flowdock/connect"
+        elsif omniauth_params['source']
+          path = URI.parse(omniauth_params['source_url']).path
+          @integration = oauth_connection.get(path).body
+          slim :"flowdock/configure"
+        else
+          redirect to("/")
+        end
       end
 
       # Endpoint for failed authorizations
@@ -63,10 +71,18 @@ module Flowdock
         slim :"flowdock/success"
       end
 
-      # Endpoint for integration configuration
+      app.put '/flowdock/integration/:source_id' do
+        @integration = FlowdockIntegration.find_by(flowdock_id: params['source_id'])
+        # Do something with it
+      end
+
+      # app.delete '/flowdock/integration/:source_id' do
+      #   if FlowdockIntegration.find_by(flowdock_id: params['source_id']).destroy
+      # end
+
+      # Endpoint for configurating the integration, e.g. which actions are posted to Flowdock
       app.get '/flowdock/configure' do
-        integration = FlowdockIntegration.where(flowdock_id: params[:integration_id])
-        # Configure the integration, e.g. which actions are posted to Flowdock
+        redirect to("/auth/flowdock?source=#{params[:source]}&source_url=#{params[:source_url]}")
       end
     end
   end
