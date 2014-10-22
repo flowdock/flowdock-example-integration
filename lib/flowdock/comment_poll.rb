@@ -4,6 +4,9 @@ module Flowdock
       @comment = comment
       super(comment.poll, user)
     end
+
+    protected
+
     def event
       "discussion"
     end

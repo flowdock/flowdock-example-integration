@@ -63,7 +63,7 @@ end
 post '/create' do
   current_user
   poll = Poll.create!(
-    title: params[:title],
+    title: params[:title].strip(),
     status: "open"
   )
 

@@ -52,8 +52,6 @@ module Flowdock
         elsif omniauth_params['source']
           path = URI.parse(omniauth_params['source_url']).path
           @integration = oauth_connection.get(path).body
-          #oauth_connection.delete(path)
-          #oauth_connection.get("/flows/flowdock/main")
           slim :"flowdock/configure"
         else
           redirect to("/")
@@ -88,8 +86,7 @@ module Flowdock
 
       app.put '/flowdock/integration/:source_id' do
         @integration = FlowdockIntegration.find_by(flowdock_id: params['source_id'])
-        # TODO: There is no update endpoint!
-        oauth_connection.put(params[:source_url], {name: params[:name]})
+        # Do something with it
       end
 
       # app.delete '/flowdock/integration/:source_id' do

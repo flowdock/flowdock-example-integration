@@ -5,6 +5,22 @@ module Flowdock
       @user = user
     end
 
+    def save
+      for integration in FlowdockIntegration.all()
+        begin
+          connection.post("/activities", to_hash.merge(token: integration.token))
+        rescue Faraday::Error::ClientError => e
+          puts "Flowdock activities endpoint returned error #{e.response[:status]}"
+          if e.response[:status] == 410 # Flowdock returned that the pairing has been deleted
+            puts "Destroying the removed integration"
+            integration.destroy!
+          end
+        end
+      end
+    end
+
+    protected
+
     def body
       body_str = ""
     end
@@ -74,11 +90,7 @@ module Flowdock
       "https://secure.gravatar.com/avatar/#{id}?s=120&r=pg"
     end
 
-    def save
-      for integration in FlowdockIntegration.all()
-        connection.post("/activities", to_hash.merge(token: integration.token))
-      end
-    end
+    private
 
     def connection
       Faraday.new FLOWDOCK_URL do |connection|
