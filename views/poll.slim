@@ -18,29 +18,29 @@ table.options
           - if @poll.has_voted?(current_user)
             -if @poll.voted_option_for_user(current_user) == option
               form action="/#{@poll.id}/unvote" method="POST"
-                = Rack::Csrf.tag(env)
+                == Rack::Csrf.tag(env)
                 input type="hidden" name="_method" value="delete"
                 input type="hidden" name="option" value=option.id
                 button.unvote type="submit" Unvote
           - else
             form action="/#{@poll.id}/vote" method="POST"
-              = Rack::Csrf.tag(env)
+              == Rack::Csrf.tag(env)
               input type="hidden" name="option" value=option.id
               button.vote type="submit" Vote
 
 - if @poll.status == 'open'
   p
     form.form-inline action="/#{@poll.id}/add_option" method="POST" role="form"
-      = Rack::Csrf.tag(env)
+      == Rack::Csrf.tag(env)
       input.form-control type="text" name="title" placeholder="Title"
       button.vote type="submit" Create new option
   p
     form action="/#{@poll.id}/close" method="POST"
-      = Rack::Csrf.tag(env)
+      == Rack::Csrf.tag(env)
       button.poll-close type="submit" Close poll
 
 form.comment action="/#{@poll.id}/comment" method="POST" role="form"
-  = Rack::Csrf.tag(env)
+  == Rack::Csrf.tag(env)
   textarea.form-control name="comment" placeholder="Comment this poll"
   button.poll-comment type="submit" Comment
 
