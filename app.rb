@@ -38,7 +38,7 @@ require_relative 'schema'
 
 def current_user
   user = User.find_by(session_token: session[:token])
-  if !user
+  if !user || user.email == 'MyEmailAddress@example.com'
     redirect to("/authentication_required")
   else
     user
