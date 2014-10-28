@@ -40,10 +40,19 @@ require_relative 'schema'
 def current_user
   user = User.find_by(session_token: session[:token])
   if !user
-    redirect to("/authentication_required")
-  else
-    user
+    user = User.create!(
+      session_token: SecureRandom.hex,
+      name: "Anonymous",
+      email: "MyEmailAddress@example.com",
+      nick: "Anonymous"
+    )
+    session[:token] = user.session_token
   end
+  user
+end
+
+before do
+  current_user
 end
 
 get '/authentication_required' do
@@ -51,7 +60,6 @@ get '/authentication_required' do
 end
 
 get '/' do
-  current_user
   @integration_set = session.has_key?(:integration_token)
   @open_polls = Poll.where(status: "open")
   @closed_polls = Poll.where(status: "closed")
@@ -59,12 +67,10 @@ get '/' do
 end
 
 get '/create' do
-  current_user
   slim :create
 end
 
 post '/create' do
-  current_user
   poll = Poll.create!(
     title: params[:title].strip(),
     status: "open"
@@ -80,7 +86,6 @@ post '/create' do
 end
 
 post '/:poll_id/vote' do
-  current_user
   poll = Poll.find(params[:poll_id])
   option = poll.options.find(params[:option].strip())
   vote = Vote.create!(option: option, user: current_user)
@@ -93,7 +98,6 @@ post '/:poll_id/vote' do
 end
 
 delete '/:poll_id/unvote' do
-  current_user
   poll = Poll.find(params[:poll_id])
   option = poll.options.find(params[:option].strip())
   vote = Vote.find_by(option: option, user: current_user)
@@ -107,7 +111,6 @@ delete '/:poll_id/unvote' do
 end
 
 post '/:poll_id/close' do
-  current_user
   poll = Poll.find(params[:poll_id])
   poll.update!(status: "closed")
   Flowdock::ClosePoll.new(poll, current_user).save()
@@ -115,7 +118,6 @@ post '/:poll_id/close' do
 end
 
 post '/:poll_id/comment' do
-  current_user
   poll = Poll.find(params[:poll_id])
   comment = Comment.create!(poll: poll, comment: params[:comment].strip())
   Flowdock::CommentPoll.new(comment, current_user).save()
@@ -123,7 +125,6 @@ post '/:poll_id/comment' do
 end
 
 post '/:poll_id/add_option' do
-  current_user
   poll = Poll.find(params[:poll_id])
   option = Option.create!(poll: poll, title: params[:title].strip())
   Flowdock::NewOption.new(option, current_user).save()
@@ -131,7 +132,6 @@ post '/:poll_id/add_option' do
 end
 
 get '/:poll_id' do
-  current_user
   begin
     @poll = Poll.find(params[:poll_id])
   rescue ActiveRecord::RecordNotFound => e

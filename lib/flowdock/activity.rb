@@ -36,18 +36,6 @@ module Flowdock
       fields
     end
 
-    def actions
-      @poll.options.map { |option| action_for(option)}
-    end
-
-    def action_for(option)
-      {
-        "name" => "Vote #{option.title}",
-        "url" => ENV['WEB_URL'] + "/#{@poll.id}/vote/#{option.id}",
-        "@type" => "ViewAction"
-      }
-    end
-
     def author
       {
         name: @user.name,
@@ -79,7 +67,6 @@ module Flowdock
           fields: fields,
           status: status,
           title: @poll.title,
-          actions: actions,
         },
         title: title
       }

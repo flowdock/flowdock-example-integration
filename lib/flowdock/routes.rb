@@ -10,7 +10,6 @@ module Flowdock
           connection.request :oauth2, session[:access_token]
           connection.request :json
           connection.response :json, content_type: /\bjson$/
-          connection.response :logger if logger.debug?
           connection.use Faraday::Response::RaiseError
           connection.adapter Faraday.default_adapter
         end
@@ -31,18 +30,6 @@ module Flowdock
         auth = request.env['omniauth.auth']
         omniauth_params = request.env['omniauth.params']
         session[:access_token] = auth[:credentials][:token]
-        user = User.find_by(email: auth[:info][:email])
-        if user
-          user.update!(session_token: SecureRandom.hex)
-        else
-          user = User.create!(
-            session_token: SecureRandom.hex,
-            name: auth[:info][:name],
-            email: auth[:info][:email],
-            nick: auth[:info][:nickname]
-          )
-        end
-        session[:token] = user.session_token
         if omniauth_params['flow']
           # Get the flow's information from Flowdock
           # The flow-parameter in omniauth params is the one we passed in the /flowdock/setup redirect url
@@ -84,11 +71,6 @@ module Flowdock
         session.delete(:access_token)
         slim :"flowdock/success"
       end
-
-      # app.put '/flowdock/integration/:source_id' do
-      #   @integration = FlowdockIntegration.find_by(flowdock_id: params['source_id'])
-      #   # Do something with it
-      # end
 
       # Endpoint for configurating the integration, e.g. which actions are posted to Flowdock
       app.get '/flowdock/configure' do
