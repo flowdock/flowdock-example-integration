@@ -4,7 +4,6 @@ require 'json'
 Bundler.require :default
 require 'sinatra/asset_pipeline'
 require_relative 'config/base'
-require_relative "view_helper"
 
 $stdout.sync = true
 
@@ -55,10 +54,6 @@ before do
   current_user
 end
 
-get '/authentication_required' do
-  slim :authentication_required
-end
-
 get '/' do
   @integration_set = session.has_key?(:integration_token)
   @open_polls = Poll.where(status: "open")
@@ -87,7 +82,7 @@ end
 
 post '/:poll_id/vote' do
   poll = Poll.find(params[:poll_id])
-  option = poll.options.find(params[:option].strip())
+  option = poll.options.find(params[:option])
   vote = Vote.create!(option: option, user: current_user)
   Flowdock::Vote.new(vote, current_user).save()
   if params[:redirect]
@@ -99,7 +94,7 @@ end
 
 delete '/:poll_id/unvote' do
   poll = Poll.find(params[:poll_id])
-  option = poll.options.find(params[:option].strip())
+  option = poll.options.find(params[:option])
   vote = Vote.find_by(option: option, user: current_user)
   vote.destroy!
   Flowdock::UnVote.new(vote, current_user).save()
@@ -134,7 +129,7 @@ end
 get '/:poll_id' do
   begin
     @poll = Poll.find(params[:poll_id])
-  rescue ActiveRecord::RecordNotFound => e
+  rescue ActiveRecord::RecordNotFound
     halt(404)
   end
   slim :poll
