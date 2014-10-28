@@ -30,6 +30,18 @@ module Flowdock
         auth = request.env['omniauth.auth']
         omniauth_params = request.env['omniauth.params']
         session[:access_token] = auth[:credentials][:token]
+        user = User.find_by(email: auth[:info][:email])
+        if user
+          user.update!(session_token: SecureRandom.hex)
+        else
+          user = User.create!(
+            session_token: SecureRandom.hex,
+            name: auth[:info][:name],
+            email: auth[:info][:email],
+            nick: auth[:info][:nickname]
+          )
+        end
+        session[:token] = user.session_token
         if omniauth_params['flow']
           # Get the flow's information from Flowdock
           # The flow-parameter in omniauth params is the one we passed in the /flowdock/setup redirect url
