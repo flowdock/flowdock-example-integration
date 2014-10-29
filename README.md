@@ -25,7 +25,7 @@ The following command starts the server and reloads it after filesystem changes:
 
 ## Pairing with Flowdock
 
-Open the application from [https://www.flowdock.com/oauth/applications] and use the `Select a flow to generate a Setup URI` -selector to generate a pairing url for the selected flow. Click the generated link to start the pairing routine. The selector uses the Setup URI that was given to the application and populates the `flow_id`and `flow_url` parameters to the uri.
+Open the application from https://www.flowdock.com/oauth/applications and use the `Select a flow to generate a Setup URI` -selector to generate a pairing url for the selected flow. Click the generated link to start the pairing routine. The selector uses the Setup URI that was given to the application and populates the `flow_id`and `flow_url` parameters to the uri.
 
 After successfully setting up the source, the application will show up in the flow's inbox sources view and in the search filters.
 
