@@ -2,6 +2,8 @@
 
 This is a simple polling application that illustrates how to integrate an application to Flowdock to receive threaded activities.
 
+![Polldock-Flowdock screenshot](https://raw.githubusercontent.com/flowdock/flowdock-example-integration/master/assets/images/screenshot.png)
+
 ## Setup
 
 Install dependencies with bundler (`bundle install`).
