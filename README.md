@@ -1,6 +1,6 @@
 # Polldock - A Flowdock example integration
 
-This is a simple polling application that illustrates how to integrate an application to Flowdock to receive threaded activities.
+This is a simple polling application that illustrates how to integrate an application to push threaded activities to Flowdock.
 
 ![Polldock-Flowdock screenshot](https://raw.githubusercontent.com/flowdock/flowdock-example-integration/master/assets/images/screenshot.png)
 
