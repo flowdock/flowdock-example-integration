@@ -61,7 +61,7 @@ module Flowdock
         author: author,
         body: body,
         event: event,
-        external_id: "example:poll:#{@poll.id}",
+        external_thread_id: "example:poll:#{@poll.id}",
         thread: {
           external_url: ENV['WEB_URL'] + "/#{@poll.id}",
           fields: fields,
