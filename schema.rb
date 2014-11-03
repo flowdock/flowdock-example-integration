@@ -33,6 +33,7 @@ ActiveRecord::Schema.define do
       table.column :email,        :string
       table.column :nick,         :string
       table.column :name,         :string
+      table.column :flowdock_user_id,  :integer
     end
   end
 

@@ -172,6 +172,7 @@ DEPENDENCIES
   faraday (~> 0.9)
   faraday_middleware
   foreman
+  jwt (~> 1.0.0)
   nokogiri
   omniauth (~> 1.2)
   omniauth-flowdock

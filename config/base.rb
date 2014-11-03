@@ -4,12 +4,16 @@ configure :development do
   require 'better_errors'
   use BetterErrors::Middleware
   BetterErrors.application_root = File.expand_path('..', __FILE__)
+  require 'pry'
+  Pry.config.theme = "pry-modern-256"
+  Pry.config.prompt_name = "polldock"
+  Pry.config.input = STDIN
 end
 
 configure :production do
   enable :raise_errors
 end
-
+disable :logging
 set :assets_precompile, %w(*.png *.jpg *.svg *.eot *.ttf *.woff *.css)
 set :assets_css_compressor, :sass
 

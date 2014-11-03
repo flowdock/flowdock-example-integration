@@ -38,7 +38,8 @@ module Flowdock
             session_token: SecureRandom.hex,
             name: auth[:info][:name],
             email: auth[:info][:email],
-            nick: auth[:info][:nickname]
+            nick: auth[:info][:nickname],
+            flowdock_user_id: auth[:uid]
           )
         end
         session[:token] = user.session_token

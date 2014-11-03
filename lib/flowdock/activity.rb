@@ -21,6 +21,20 @@ module Flowdock
 
     protected
 
+    def actions
+      @poll.options.map do |option|
+        {
+          "@type" => "UpdateAction",
+          "name" => "Vote: #{option.title}",
+          "target" => {
+            "@type" => "EntryPoint",
+            "urlTemplate" => ENV['WEB_URL'] + "/#{@poll.id}/vote/#{option.id}",
+            "httpMethod" => "POST"
+          }
+        }
+      end
+    end
+
     def body
       body_str = ""
     end
@@ -67,6 +81,7 @@ module Flowdock
           fields: fields,
           status: status,
           title: @poll.title,
+          actions: actions
         },
         title: title
       }
