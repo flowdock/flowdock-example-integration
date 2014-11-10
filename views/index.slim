@@ -1,5 +1,5 @@
 h1 Polldock
-a.poll-create type="button" href="/create" Create a new poll
+a.poll-create type="button" href="/polls/create" Create a new poll
 - if @open_polls.length == 0
   p You don't have any open polls, create one!
 
@@ -8,7 +8,7 @@ ul.poll-list
   - for poll in @open_polls
     li
       h3.poll-title
-        a href="/#{poll.id}" = poll.title
+        a href="/polls/#{poll.id}" = poll.title
         - if poll.has_voted?(current_user)
           |  (voted)
       ol
@@ -17,14 +17,14 @@ ul.poll-list
             #{option.title}: #{option.votes_count}
             - if poll.has_voted?(current_user)
               - if poll.voted_option_for_user(current_user) == option
-                form action="/#{poll.id}/unvote" method="POST"
+                form action="/polls/#{poll.id}/unvote" method="POST"
                   == Rack::Csrf.tag(env)
                   input type="hidden" name="_method" value="delete"
                   input type="hidden" name="option" value=option.id
                   input type="hidden" name="redirect" value="/"
                   button.unvote type="submit" Unvote
             - else
-              form action="/#{poll.id}/vote" method="POST"
+              form action="/polls/#{poll.id}/vote" method="POST"
                 == Rack::Csrf.tag(env)
                 input type="hidden" name="option" value=option.id
                 input type="hidden" name="redirect" value="/"
@@ -35,4 +35,4 @@ ul.poll-list
   - for poll in @closed_polls
     li
       h3
-        a href="/#{poll.id}" = poll.title
+        a href="/polls/#{poll.id}" = poll.title

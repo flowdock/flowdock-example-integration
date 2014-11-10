@@ -14,6 +14,11 @@ module Flowdock
           connection.adapter Faraday.default_adapter
         end
       end
+
+      def avatar_url(email)
+        id = Digest::MD5.hexdigest(email.to_s.downcase)
+        "https://secure.gravatar.com/avatar/#{id}?s=120&r=pg"
+      end
     end
 
     def self.registered(app)
@@ -30,16 +35,15 @@ module Flowdock
         auth = request.env['omniauth.auth']
         omniauth_params = request.env['omniauth.params']
         session[:access_token] = auth[:credentials][:token]
-        user = User.find_by(email: auth[:info][:email])
+        user = User.find_by(flowdock_user_id: auth[:uid])
         if user
           user.update!(session_token: SecureRandom.hex)
         else
           user = User.create!(
             session_token: SecureRandom.hex,
             name: auth[:info][:name],
-            email: auth[:info][:email],
-            nick: auth[:info][:nickname],
-            flowdock_user_id: auth[:uid]
+            flowdock_user_id: auth[:uid],
+            image: avatar_url(auth[:info][:email])
           )
         end
         session[:token] = user.session_token

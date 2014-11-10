@@ -22,16 +22,43 @@ module Flowdock
     protected
 
     def actions
-      @poll.options.map do |option|
-        {
-          "@type" => "UpdateAction",
-          "name" => "Vote: #{option.title}",
-          "target" => {
-            "@type" => "EntryPoint",
-            "urlTemplate" => ENV['WEB_URL'] + "/#{@poll.id}/vote/#{option.id}",
-            "httpMethod" => "POST"
+      if @poll.status == "open"
+        actions = @poll.options.map do |option|
+          {
+            "@type" => "UpdateAction",
+            "name" => "Vote: #{option.title}",
+            "image" => "https://openclipart.org/image/300px/svg_to_png/167549/Kliponious-green-tick.png",
+            "target" => {
+              "@type" => "EntryPoint",
+              "urlTemplate" => ENV['WEB_URL'] + "/api/polls/#{@poll.id}/vote/#{option.id}",
+              "httpMethod" => "POST"
+            }
           }
-        }
+        end
+        actions.push(
+          {
+            "@type" => "UpdateAction",
+            "name" => "Close poll",
+            "target" => {
+              "@type" => "EntryPoint",
+              "urlTemplate" => ENV['WEB_URL'] + "/api/polls/#{@poll.id}/close",
+              "httpMethod" => "POST"
+            }
+          }
+        )
+        actions
+      else
+        [
+          {
+            "@type" => "UpdateAction",
+            "name" => "Reopen poll",
+            "target" => {
+              "@type" => "EntryPoint",
+              "urlTemplate" => ENV['WEB_URL'] + "/api/polls/#{@poll.id}/reopen",
+              "httpMethod" => "POST"
+            }
+          }
+        ]
       end
     end
 
@@ -53,8 +80,7 @@ module Flowdock
     def author
       {
         name: @user.name,
-        email: @user.email,
-        avatar: avatar_url(@user.email)
+        avatar: @user.image
       }
     end
 
@@ -77,7 +103,7 @@ module Flowdock
         event: event,
         external_thread_id: "example:poll:#{@poll.id}",
         thread: {
-          external_url: ENV['WEB_URL'] + "/#{@poll.id}",
+          external_url: ENV['WEB_URL'] + "/polls/#{@poll.id}",
           fields: fields,
           status: status,
           title: @poll.title,
@@ -85,11 +111,6 @@ module Flowdock
         },
         title: title
       }
-    end
-
-    def avatar_url(email)
-      id = Digest::MD5.hexdigest(email.to_s.downcase)
-      "https://secure.gravatar.com/avatar/#{id}?s=120&r=pg"
     end
 
     private

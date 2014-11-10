@@ -26,6 +26,7 @@ require_relative 'models/user'
 
 require 'securerandom'
 require 'rack/csrf'
+require 'openssl'
 
 register Flowdock::Routes
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
@@ -41,10 +42,33 @@ require_relative 'schema'
 
 def current_user
   user = User.find_by(session_token: session[:token])
-  if !user || user.email == 'MyEmailAddress@example.com'
+  if !user
     redirect to("/authentication_required")
   else
     user
+  end
+end
+
+def api_user
+  token, _ = JWT.decode(request.env['HTTP_FLOWDOCK_TOKEN'], ENV['FLOWDOCK_CLIENT_SECRET'])
+  request_data = request.body.read
+  if token["signature"] != Digest::SHA256.hexdigest(request_data)
+    halt 403
+  else
+    # Uncomment next line to test the authentication path in Flowdock
+    #halt 401, {"www-authenticate" => "Flowdock-Token url=#{ENV['WEB_URL']}/auth/flowdock"}, "Authentication required"
+    flowdock_user_id = token["sub"]
+    user = User.find_by(flowdock_user_id: flowdock_user_id)
+    if user
+      user
+    else
+      request_user = JSON.parse(request_data)["agent"]
+      user = User.create!(
+        name: request_user["name"],
+        flowdock_user_id: flowdock_user_id,
+        image: request_user["image"]
+      )
+    end
   end
 end
 
@@ -60,12 +84,12 @@ get '/' do
   slim :index
 end
 
-get '/create' do
+get '/polls/create' do
   current_user
   slim :create
 end
 
-post '/create' do
+post '/polls/create' do
   current_user
   poll = Poll.create!(
     title: params[:title].strip(),
@@ -95,31 +119,31 @@ def vote(poll_id, option_id, user)
   end
 end
 
-post '/:poll_id/vote' do
+post '/polls/:poll_id/vote' do
   vote(params[:poll_id], params[:option], current_user)
   if params[:redirect]
     redirect to("/")
   else
-    redirect to("/" + params[:poll_id])
+    redirect to("/polls/" + params[:poll_id])
   end
 end
 
 # Voting from Flowdock thread actions!
-post '/:poll_id/vote/:option_id' do
-  token, _ = JWT.decode(request.env['HTTP_FLOWDOCK_TOKEN'], ENV['FLOWDOCK_CLIENT_SECRET'])
-  # TODO check the signature
-  flowdock_user_id = token["sub"]
-  api_user = User.find_by(flowdock_user_id: flowdock_user_id)
-  if api_user
-    vote(params[:poll_id], params[:option_id], api_user)
-    status 200
-  else
-    # Throw some error to Flowdock to communicate that the user has to authenticate to this service with Flowdock first
-    status 401
-  end
+post '/api/polls/:poll_id/vote/:option_id' do
+  vote(params[:poll_id], params[:option_id], api_user)
+  status 200
 end
 
-delete '/:poll_id/unvote' do
+post '/api/polls/:poll_id/close' do
+  user = api_user
+  poll = Poll.find(params[:poll_id])
+  poll.update!(status: "closed")
+  Flowdock::ClosePoll.new(poll, user).save()
+  status 200
+end
+
+
+delete '/polls/:poll_id/unvote' do
   current_user
   poll = Poll.find(params[:poll_id])
   option = poll.options.find(params[:option])
@@ -129,35 +153,35 @@ delete '/:poll_id/unvote' do
   if params[:redirect]
     redirect to("/")
   else
-    redirect to("/" + params[:poll_id])
+    redirect to("/polls/" + params[:poll_id])
   end
 end
 
-post '/:poll_id/close' do
+post '/polls/:poll_id/close' do
   current_user
   poll = Poll.find(params[:poll_id])
   poll.update!(status: "closed")
   Flowdock::ClosePoll.new(poll, current_user).save()
-  redirect to("/" + params[:poll_id])
+  redirect to("/polls/" + params[:poll_id])
 end
 
-post '/:poll_id/comment' do
+post '/polls/:poll_id/comment' do
   current_user
   poll = Poll.find(params[:poll_id])
   comment = Comment.create!(poll: poll, comment: params[:comment].strip())
   Flowdock::CommentPoll.new(comment, current_user).save()
-  redirect to("/" + params[:poll_id])
+  redirect to("/polls/" + params[:poll_id])
 end
 
-post '/:poll_id/add_option' do
+post '/polls/:poll_id/add_option' do
   current_user
   poll = Poll.find(params[:poll_id])
   option = Option.create!(poll: poll, title: params[:title].strip())
   Flowdock::NewOption.new(option, current_user).save()
-  redirect to("/" + params[:poll_id])
+  redirect to("/polls/" + params[:poll_id])
 end
 
-get '/:poll_id' do
+get '/polls/:poll_id' do
   current_user
   begin
     @poll = Poll.find(params[:poll_id])

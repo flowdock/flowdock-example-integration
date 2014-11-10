@@ -29,11 +29,10 @@ ActiveRecord::Schema.define do
 
   unless ActiveRecord::Base.connection.tables.include? 'users'
     create_table :users do |table|
-      table.column :session_token,   :string
-      table.column :email,        :string
-      table.column :nick,         :string
-      table.column :name,         :string
-      table.column :flowdock_user_id,  :integer
+      table.column :session_token,    :string
+      table.column :name,             :string
+      table.column :flowdock_user_id, :integer
+      table.column :image,            :string
     end
   end
 
