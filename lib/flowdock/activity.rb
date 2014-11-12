@@ -48,17 +48,7 @@ module Flowdock
         )
         actions
       else
-        [
-          {
-            "@type" => "UpdateAction",
-            "name" => "Reopen poll",
-            "target" => {
-              "@type" => "EntryPoint",
-              "urlTemplate" => ENV['WEB_URL'] + "/api/polls/#{@poll.id}/reopen",
-              "httpMethod" => "POST"
-            }
-          }
-        ]
+        []
       end
     end
 
