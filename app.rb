@@ -52,7 +52,7 @@ end
 def api_user
   token, _ = JWT.decode(request.env['HTTP_FLOWDOCK_TOKEN'], ENV['FLOWDOCK_CLIENT_SECRET'])
   request_data = request.body.read
-  if token["signature"] != Digest::SHA256.hexdigest(request_data)
+  if !Rack::Utils.secure_compare(token["signature"], Digest::SHA256.hexdigest(request_data))
     halt 403
   else
     # Uncomment next line to test the authentication path in Flowdock
