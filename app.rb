@@ -41,7 +41,9 @@ ActiveRecord::Base.establish_connection @dbconfig[@environment]
 require_relative 'schema'
 
 def current_user
-  user = User.find_by(session_token: session[:token])
+  user = if !session[:token].nil?
+    User.find_by(session_token: session[:token])
+  end
   if !user
     redirect to("/authentication_required")
   else
