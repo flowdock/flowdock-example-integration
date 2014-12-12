@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
-# This example is a standalone command line script, which authenticates with
-# Flowdock and sets up everything that's required to test out the API
+# This is an example standalone command-line script that authenticates with
+# Flowdock and sets up everything that's required to test out the Flowdock API
 begin
   require 'oauth2'
 rescue LoadError
