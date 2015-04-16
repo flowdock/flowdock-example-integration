@@ -15,7 +15,7 @@ In Flowdock, [create an OAuth application](https://www.flowdock.com/oauth/applic
     (Optional) Configuration URI: <WEB_URL>/flowdock/configure?source={source_id}&source_url={source_url}
     Icon: Choose an appropriate image for the application. You can use the images found in assets/images.
 
-After creating the application, you will receive `Application Id` and `Secret` values. Copy the sample.env file to .env and add these values to the corresponding `FLOWDOCK_CLIENT_` -prefixed environment variables. Change WEB_URL to match the public endpoint for your application e.g. `http://localhost:3300`.
+After creating the application, you will receive `Application Id` and `Secret` values. Copy the `sample.env` file to `.env` and add these values to the corresponding `FLOWDOCK_CLIENT_` -prefixed environment variables. Change WEB_URL to match the public endpoint for your application e.g. `http://localhost:3300`.
 
 ### Running the server
 
