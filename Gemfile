@@ -10,7 +10,7 @@ gem 'activerecord', '~> 4.1.6'
 gem 'rack_csrf', '~> 2.5.0'
 
 # Authentication
-gem 'omniauth', '~> 1.2'
+gem 'omniauth', '~> 1.3.2'
 gem 'omniauth-flowdock'
 
 # API
@@ -21,7 +21,7 @@ gem 'faraday_middleware'
 gem 'sinatra-asset-pipeline'
 gem 'sprockets', '~> 2.12'
 gem 'compass', '~> 1.0.0.alpha.21'
-gem 'nokogiri'
+gem 'nokogiri', '~> 1.8.1'
 gem 'bootstrap-sass', '~> 3.2.0.2'
 
 group :development do
