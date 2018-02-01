@@ -6,7 +6,7 @@ gem 'dotenv'
 gem 'sinatra', '~> 1.4'
 gem 'slim', '~> 2.0'
 gem 'puma', '~> 2.8.2'
-gem 'activerecord', '~> 4.1.6'
+gem 'activerecord', '~> 4.1.14.1'
 gem 'rack_csrf', '~> 2.5.0'
 
 # Authentication
@@ -19,7 +19,7 @@ gem 'faraday_middleware'
 
 # Assets
 gem 'sinatra-asset-pipeline'
-gem 'sprockets', '~> 2.12'
+gem 'sprockets', '~> 2.12.3'
 gem 'compass', '~> 1.0.0.alpha.21'
 gem 'nokogiri', '~> 1.8.1'
 gem 'bootstrap-sass', '~> 3.2.0.2'
