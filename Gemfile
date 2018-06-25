@@ -19,7 +19,7 @@ gem 'faraday_middleware'
 
 # Assets
 gem 'sinatra-asset-pipeline'
-gem 'sprockets', '~> 2.12.3'
+gem 'sprockets', '~> 2.12.5'
 gem 'compass', '~> 1.0.0.alpha.21'
 gem 'nokogiri', '~> 1.8.1'
 gem 'bootstrap-sass', '~> 3.2.0.2'
